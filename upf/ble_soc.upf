@@ -1,0 +1,124 @@
+upf_version 2.1
+
+# Create the power domains
+
+create_power_domain PD_TOP
+
+create_power_domain PD_AON \
+    -elements {u_aon_top u_pad_ring}
+
+create_power_domain PD_CORE \
+    -elements {u_ble_baseband}
+
+create_power_domain PD_RET \
+    -elements {u_retention_bank}
+
+
+# Define the supply ports and nets
+
+create_supply_net VDD_AON
+create_supply_port VDD_AON -direction in
+connect_supply_net  VDD_AON -ports VDD_AON
+
+create_supply_net VDD_CORE_EXT
+create_supply_port VDD_CORE_EXT -direction in
+connect_supply_net VDD_CORE_EXT -ports VDD_CORE_EXT
+
+create_supply_net VDD_CORE
+
+create_supply_net VSS
+create_supply_port VSS -direction in
+connect_supply_net  VSS -ports VSS
+
+# Connect supplies to domains
+
+set_domain_supply_net PD_TOP \
+    -primary_power_net VDD_AON \
+    -primary_ground_net VSS
+
+set_domain_supply_net PD_AON \
+    -primary_power_net VDD_AON \
+    -primary_ground_net VSS
+
+set_domain_supply_net PD_CORE \
+    -primary_power_net VDD_CORE \
+    -primary_ground_net VSS
+
+set_domain_supply_net PD_RET \
+    -primary_power_net VDD_AON \
+    -primary_ground_net VSS
+
+# Create Power switch
+
+create_power_switch core_pwr_sw \
+    -domain PD_CORE \
+    -input_supply_port {vin VDD_CORE_EXT} \
+    -output_supply_port {vout VDD_CORE} \
+    -control_port {pwr_en core_pwr_en} \
+    -on_state {on_state vin {pwr_en}} \
+    -off_state {off_state {!pwr_en}}
+
+# Isolation: clamp all outputs of PD_CORE to 0 when PD_CORE is OFF
+
+set_isolation iso_core_out \
+    -domain PD_CORE \
+    -isolation_power_net VDD_AON \
+    -isolation_ground_net VSS \
+    -clamp_value 0 \
+    -applies_to outputs \
+    -location parent
+
+set_isolation_control iso_core_out \
+    -domain PD_CORE \
+    -isolation_signal iso_en \
+    -isolation_sense high \
+    -location parent
+
+# Level shifters:
+
+set_level_shifter ls_core \
+    -domain PD_CORE \
+    -applies_to both \
+    -rule both \
+    -location parent
+
+# set_level_shifter ls_core_in \
+#     -domain PD_CORE \
+#     -applies_to inputs \
+#     -source VDD_AON \
+#     -sink VDD_CORE \
+#     -rule high_to_low \
+#     -location parent
+
+# set_level_shifter ls_core_out \
+#     -domain PD_CORE \
+#     -applies_to outputs \
+#     -source VDD_CORE \
+#     -sink VDD_AON \
+#     -rule low_to_high \
+#     -location parent
+
+# Retention: 
+
+set_retention ret_ret_bank \
+    -domain PD_RET \
+    -retention_power_net VDD_AON \
+    -retention_ground_net VSS \
+    -save_signal {save_n negedge} \
+    -restore_signal {restore_n negedge}
+
+# Power State Table (PST)
+
+add_port_state VDD_AON -state {ON1V2 1.2}
+
+add_port_state VDD_CORE_EXT -state {ON0V9 0.9}
+
+add_port_state VDD_CORE -state {ON0V9 0.9}
+add_port_state VDD_CORE -state {OFF off}
+
+create_pst ble_pst \
+    -supplies {VDD_AON VDD_CORE_EXT VDD_CORE}
+
+add_pst_state ACTIVE -pst ble_pst -state {ON1V2 ON0V9 ON0V9}
+add_pst_state SLEEP  -pst ble_pst -state {ON1V2 ON0V9 OFF}
+# add_pst_state WAKEUP -pst ble_pst -state {ON1V2 ON0V9 ON0V9}
