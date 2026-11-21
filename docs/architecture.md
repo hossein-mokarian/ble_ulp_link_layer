@@ -36,3 +36,19 @@ The BLE baseband module needs to be gated. Otherwise it is always on and consume
 - **ON state**: `core_pwr_en = 1` → `VDD_CORE` powered → baseband active.
 - **OFF state**: `core_pwr_en = 0` → `VDD_CORE` gated → isolation clamps outputs to 0.
 - **PST mapping**: ACTIVE/WAKEUP → `core_pwr_en=1`; SLEEP → `core_pwr_en=0`.
+
+## 7. Clock-Gating Readiness
+- Every register in PD_CORE has an explicit enable (`data_valid`, `init`, or state-change).
+- CRC and whitening LFSRs advance only when `tx_active` is high.
+- FSM state register toggles only on state transitions.
+- This structure lets OpenROAD `cgt` prove gating conditions via ABC/SAT and insert ICGs during synthesis.
+
+## 8. Isolation Direction
+- `set_isolation ... -applies_to outputs` on PD_CORE: only PD_CORE outputs are clamped when PD_CORE is off.
+- AON → PD_CORE inputs (`wake_req`, `clk_aon`) require **no** isolation: they are driven by an always-on domain.
+- VC LP check: confirm no redundant isolation on inputs.
+
+## 9. AON Timer
+- 16-bit down-counter in `PD_AON`, clocked at 32 kHz.
+- `wake_req` pulses for one AON cycle when the counter reaches 1.
+- `interval` and `timer_load` are PD_CORE outputs (already isolated by upf policy).

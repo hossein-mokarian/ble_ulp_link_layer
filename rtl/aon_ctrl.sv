@@ -2,7 +2,7 @@
 module aon_ctrl (
     input logic clk_aon,
     input logic rst_n,
-    input logic wake_reg,
+    input logic wake_req,
     output logic core_pwr_en
 );
 
@@ -10,7 +10,7 @@ module aon_ctrl (
         if (!rst_n) begin
             core_pwr_en <= 1'b0;
         end else begin
-            core_pwr_en <= wake_reg;
+            core_pwr_en <= wake_req;
         end 
     end
 
