@@ -1,0 +1,18 @@
+
+# Check gatable design
+
+plugin -i slang 
+read_slang ../rtl/ble_ll_fsm.sv \
+           ../rtl/crc24.sv \
+           ../rtl/whitening.sv \
+           ../rtl/ble_baseband.sv \
+           ../rtl/ble_core_top.sv \
+           --top ble_core_top
+
+synth -top ble_core_top -run :fine
+
+stat
+
+clockgate -pos DUMMY_ICG E:CK:GCK -min_net_size 1
+
+stat

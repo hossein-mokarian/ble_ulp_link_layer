@@ -2,9 +2,11 @@
 module pkt_buffer (
     input  logic        clk,
     input  logic        rst_n,
+
     input  logic        wr_en,
     input  logic [7:0]  wr_data,
     input  logic        rd_en,
+    
     output logic [7:0]  rd_data,
     output logic        full,
     output logic        empty

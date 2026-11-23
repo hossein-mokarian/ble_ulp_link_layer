@@ -2,8 +2,10 @@
 module aon_timer (
     input  logic        clk_aon,        // 32 kHz, always on
     input  logic        rst_n,
+
     input  logic [15:0] interval,       // connection interval in AON ticks
     input  logic        timer_load,     // from PD_CORE after connection setup
+    
     output logic        wake_req        // single-cycle pulse to aon_ctrl
 );
 

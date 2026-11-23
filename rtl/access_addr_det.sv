@@ -2,9 +2,11 @@
 module access_addr_det (
     input  logic        clk,
     input  logic        rst_n,
+
     input  logic        rx_bit,
     input  logic        rx_valid,       // enable
     input  logic [31:0] expected_aa,    // 0x8E89BED6 for advertising
+    
     output logic        aa_match
 );
 

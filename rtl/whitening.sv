@@ -2,10 +2,12 @@
 module whitening (
     input  logic       clk,
     input  logic       rst_n,
+
     input  logic       init,
     input  logic [6:0] channel_seed,  // channel_num + 1
     input  logic       data_in,
     input  logic       data_valid,
+    
     output logic       data_out
 );
 

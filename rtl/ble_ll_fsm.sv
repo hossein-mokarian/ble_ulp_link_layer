@@ -2,8 +2,12 @@
 module ble_ll_fsm (
     input  logic clk,
     input  logic rst_n,
+
     input  logic pkt_start,      // from AON: packet event scheduled
     input  logic pkt_done,       // from datapath: CRC + whitening finished
+    
+    output logic crc_init,
+    output logic whit_init,
     output logic  tx_active,      // enable for TX datapath
     output logic  rx_active       // enable for RX datapath (future)
 );
@@ -39,6 +43,8 @@ module ble_ll_fsm (
 
     // Output enables: these drive the datapath clock gates
     always_comb begin
+        crc_init = (state == STANDBY);
+        whit_init = (state == STANDBY);
         tx_active = (state == TX);
         rx_active = (state == RX);
     end

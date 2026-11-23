@@ -1,10 +1,18 @@
 
 module ble_soc_top (
-    input logic clk_aon,
-    input logic rst_n,
+    input logic         clk_aon,
+    input logic         rst_n,
 
-    input logic clk_core,
-    input logic rst_n_core
+    input logic         clk_core,
+    input logic         rst_n_core
+
+    input logic         pkt_start,
+    input logic [7:0]   whit_seed,
+    input logic         tx_bit,
+    input logic         rx_bit,
+
+    output logic [23:0] crc_out,
+    output logic [7:0]  whitened_out
 );
 
     logic wake_req;
@@ -31,7 +39,15 @@ module ble_soc_top (
     // PD_CORE: switchable
     ble_baseband u_ble_basedband (
         .clk_core   (clk_core),
-        .rst_n_core (rst_n_core)
+        .rst_n_core (rst_n_core),
+
+        .pkt_start(pkt_start),
+        .whit_seed(whit_seed),
+        .tx_bit(tx_bit),
+        .rx_bit(rx_bit),
+
+        .crc_out(crc_out),
+        .whitened_out(whitened_out)
     );
 
 endmodule

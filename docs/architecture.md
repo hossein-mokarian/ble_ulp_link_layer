@@ -52,3 +52,10 @@ The BLE baseband module needs to be gated. Otherwise it is always on and consume
 - 16-bit down-counter in `PD_AON`, clocked at 32 kHz.
 - `wake_req` pulses for one AON cycle when the counter reaches 1.
 - `interval` and `timer_load` are PD_CORE outputs (already isolated by upf policy).
+
+## 10. Functional Verification
+- **Golden vector**: Bluetooth Core Spec advertising PDU + CRC (0x1BC475).
+- **Whitening seed**: Channel 37 → seed 38.
+- **Bit order**: Data fed MSB-first to CRC; CRC compared MSB-first per spec.
+- **Result**: Icarus Verilog simulation passes with 0 failures.
+- **Gating evidence**: `tx_active` and `data_valid` are low between packets; CRC/whitening LFSRs freeze (see waveform).

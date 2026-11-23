@@ -20,5 +20,8 @@ xsim.dir/
 xvlog.pb
 xelab.pb
 
+# iverilog files
+*.vvp
+
 # Softwares
 /soft/

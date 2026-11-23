@@ -2,7 +2,9 @@
 module aon_ctrl (
     input logic clk_aon,
     input logic rst_n,
+
     input logic wake_req,
+    
     output logic core_pwr_en
 );
 
