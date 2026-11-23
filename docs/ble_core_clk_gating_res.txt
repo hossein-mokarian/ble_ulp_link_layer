@@ -1,0 +1,53 @@
+
+3. Printing statistics.
+
+=== ble_core_top ===
+
+        +----------Local Count, excluding submodules.
+        |
+       66 wires
+      277 wire bits
+       48 public wires
+      166 public wire bits
+       11 ports
+       40 port bits
+       25 cells
+        3   $adffe
+        3   $eq
+        1   $logic_not
+        7   $mux
+        2   $ne
+        1   $pmux
+        1   $reduce_and
+        1   $reduce_bool
+        1   $reduce_or
+        5   $xor
+
+4. Executing CLOCK_GATE pass (extract clock gating out of flip flops).
+Converted 3 FFs.
+<suppressed ~3 debug messages>
+
+5. Printing statistics.
+
+=== ble_core_top ===
+
+        +----------Local Count, excluding submodules.
+        |
+       68 wires
+      279 wire bits
+       48 public wires
+      166 public wire bits
+       11 ports
+       40 port bits
+       27 cells
+        3   $adff
+        3   $eq
+        1   $logic_not
+        7   $mux
+        2   $ne
+        1   $pmux
+        1   $reduce_and
+        1   $reduce_bool
+        1   $reduce_or
+        5   $xor
+        2   DUMMY_ICG
