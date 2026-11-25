@@ -4,7 +4,7 @@ module ble_soc_top (
     input logic         rst_n,
 
     input logic         clk_core,
-    input logic         rst_n_core
+    input logic         rst_n_core,
 
     input logic         pkt_start,
     input logic         pkt_done,
@@ -17,13 +17,16 @@ module ble_soc_top (
     output logic [23:0] crc_out,
     output logic        whitened_out,
 
-    input logic         wake_req,
-    input logic         pwr_good,
     output logic        core_pwr_en,
     output logic        iso_en_core,
     output logic        ret_save_n,
     output logic        ret_restore_n
 );
+
+    logic [15:0] timer_interval;
+    logic timer_load;
+    logic pwr_good;
+
 
     // PD_AON domain: always powered
     aon_ctrl u_aon_ctrl (
@@ -39,17 +42,17 @@ module ble_soc_top (
         .ret_restore_n (ret_restore_n)
     );
 
-    aon_timer u_timer (
+    aon_timer u_aon_timer (
         .clk_aon    (clk_aon),
         .rst_n      (rst_n),
-        .interval   (interval_from_core),   // isolated output of PD_CORE
-        .timer_load (timer_load_from_core), // isolated output of PD_CORE
-        .wake_req   (wake_req)              // input to PD_CORE, no isolation
+        .interval   (timer_interval),   // isolated output of PD_CORE
+        .timer_load (timer_load),       // isolated output of PD_CORE
+        .wake_req   (wake_req)          // input to PD_CORE, no isolation
     );
 
 
     // PD_CORE: switchable
-    ble_baseband u_ble_basedband (
+    ble_baseband u_ble_baseband (
         .clk_core      (clk_core),
         .rst_n_core    (rst_n_core),
 
@@ -62,7 +65,11 @@ module ble_soc_top (
         .rx_data_valid (rx_data_valid),
 
         .crc_out       (crc_out),
-        .whitened_out  (whitened_out)
+        .whitened_out  (whitened_out),
+
+        .timer_interval (timer_interval),
+        .timer_load     (timer_load),
+        .pwr_good       (pwr_good)
     );
 
 endmodule

@@ -1,16 +1,20 @@
 upf_version 2.1
 
+set_design_top ble_soc_top
+set_scope .
 
 # Create the power domains
 
-create_power_domain PD_TOP
+create_power_domain PD_TOP -include_scope
 
 create_power_domain PD_AON \
-    -elements {u_aon_top u_pad_ring}
+    -elements {u_aon_ctrl u_aon_timer} \
+    -include_scope
 
+# u_retention_bank
 create_power_domain PD_CORE \
-    -elements {u_ble_baseband u_retention_bank}
-
+    -elements {u_ble_baseband} \
+    -include_scope
 
 # Define the supply ports and nets
 
@@ -57,19 +61,35 @@ create_power_switch core_pwr_sw \
 
 # Isolation: clamp all outputs of PD_CORE to 0 when PD_CORE is OFF
 
+create_supply_set ISO_AON \
+    -function {power VDD_AON} \
+    -function {ground VSS}
+
+# Todo: -location self
 set_isolation iso_core_out \
     -domain PD_CORE \
-    -isolation_power_net VDD_AON \
-    -isolation_ground_net VSS \
+    -isolation_supply_set ISO_AON \
     -clamp_value 0 \
     -applies_to outputs \
     -isolation_signal iso_en_core \
     -isolation_sense high \
-    -location parent # Todo: self
+    -location parent
+
+# # Todo: -location self
+# set_isolation iso_core_out \
+#     -domain PD_CORE \
+#     -isolation_power_net VDD_AON \
+#     -isolation_ground_net VSS \
+#     -clamp_value 0 \
+#     -applies_to outputs \
+#     -location parent
+#     # -isolation_signal iso_en_core \
+#     # -isolation_sense high \
+#     # -location parent
 
 # set_isolation_control iso_core_out \
 #     -domain PD_CORE \
-#     -isolation_signal iso_en \
+#     -isolation_signal iso_en_core \
 #     -isolation_sense high \
 #     -location parent
 
@@ -101,13 +121,26 @@ set_level_shifter ls_core \
 
 # Retention: 
 
+# Define an Always-On supply set for retention
+create_supply_set SS_AON \
+    -function {power VDD_AON} \
+    -function {ground VSS}
+
+# Retention:
 set_retention ret_ret_bank \
     -domain PD_CORE \
-    -retention_power_net VDD_AON \
-    -retention_ground_net VSS \
+    -retention_supply_set SS_AON \
     -save_signal {ret_save_n negedge} \
     -restore_signal {ret_restore_n negedge}
-    -elements {u_retention_bank}
+
+
+# set_retention ret_ret_bank \
+#     -domain PD_CORE \
+#     -retention_power_net VDD_AON \
+#     -retention_ground_net VSS \
+#     -save_signal {ret_save_n negedge} \
+#     -restore_signal {ret_restore_n negedge}
+#     -elements {u_retention_bank}
 
 
 # Power State Table (PST)

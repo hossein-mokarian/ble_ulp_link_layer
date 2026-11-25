@@ -11,8 +11,11 @@ module ble_baseband (
     input logic       rx_bit,
     input logic       rx_data_valid,
 
+    output logic [15:0] timer_interval,       // connection interval in AON ticks
+    output logic        timer_load,
     output logic [23:0] crc_out,
-    output logic        whitened_out
+    output logic        whitened_out,
+    output logic        pwr_good
 );
 
     logic crc_init, whit_init;
@@ -29,11 +32,16 @@ module ble_baseband (
 
         .pkt_start  (pkt_start),     // from AON
         .pkt_done   (pkt_done),     // Todo:
+
         .crc_init   (crc_init),
         .whit_init  (whit_init),
 
         .tx_active  (), // tx_data_valid
-        .rx_active  () // rx_data_valid
+        .rx_active  (), // rx_data_valid
+
+        .timer_interval (timer_interval),       // connection interval in AON ticks
+        .timer_load     (timer_load),
+        .pwr_good      (pwr_good)
     );
 
     crc24 u_crc (

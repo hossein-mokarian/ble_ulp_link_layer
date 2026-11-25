@@ -8,8 +8,13 @@ module ble_ll_fsm (
     
     output logic crc_init,
     output logic whit_init,
+
     output logic  tx_active,      // enable for TX datapath
-    output logic  rx_active       // enable for RX datapath (future)
+    output logic  rx_active,      // enable for RX datapath (future)
+
+    output logic [15:0] timer_interval,       // connection interval in AON ticks
+    output logic        timer_load,
+    output logic        pwr_good
 );
 
     typedef enum logic [1:0] {
@@ -48,5 +53,9 @@ module ble_ll_fsm (
         tx_active = (state == TX);
         rx_active = (state == RX);
     end
+
+    assign timer_interval = 16'd20;
+    assign timer_load = (state != STANDBY);
+    assign pwr_good = 1'b1;
 
 endmodule

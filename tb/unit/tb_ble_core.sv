@@ -12,6 +12,9 @@ module tb_ble_core;
     logic  [6:0]  channel_seed;
     logic         tx_data_bit;
     logic         tx_data_valid;
+
+    logic [15:0] timer_interval;
+    logic        timer_load;
     
     logic [23:0]  crc_out;
     logic         whitened_out;
@@ -34,19 +37,21 @@ module tb_ble_core;
 
     // DUT: FSM + CRC + whitening
     ble_core_top u_ble_core (
-        .clk_core(clk),
-        .rst_n_core(rst_n),
+        .clk_core       (clk),
+        .rst_n_core     (rst_n),
 
-        .pkt_start(pkt_start),
-        .pkt_done(pkt_done),
-        .whit_seed(channel_seed),
-        .tx_bit(tx_data_bit),
-        .tx_data_valid(tx_data_valid),
-        .rx_bit(),
-        .rx_data_valid(),
+        .pkt_start      (pkt_start),
+        .pkt_done       (pkt_done),
+        .whit_seed      (channel_seed),
+        .tx_bit         (tx_data_bit),
+        .tx_data_valid  (tx_data_valid),
+        .rx_bit         (),
+        .rx_data_valid  (),
 
-        .crc_out(crc_out),
-        .whitened_out(whitened_out)
+        .timer_interval (timer_interval),
+        .timer_load     (timer_load),
+        .crc_out        (crc_out),
+        .whitened_out   (whitened_out)
     );
 
 
