@@ -13,18 +13,16 @@ module aon_timer (
 
     always_ff @(posedge clk_aon or negedge rst_n) begin
         if (!rst_n) begin
-            counter  <= 16'd0;
-            wake_req <= 1'b0;
+            counter  <= interval;
         end else if (timer_load) begin
+            counter  <= interval - 1;
+        end else if (counter == 16'b0) begin
             counter  <= interval;
-            wake_req <= 1'b0;
-        end else if (counter == 16'd1) begin
-            counter  <= interval;
-            wake_req <= 1'b1;           // one-cycle pulse
         end else begin
             counter  <= counter - 1'b1;
-            wake_req <= 1'b0;
         end
     end
+
+    assign wake_req = (counter == '0);
 
 endmodule

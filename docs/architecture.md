@@ -24,8 +24,8 @@ A simple diagram showing:
 
 ## 4. Domain Crossings
 - **PD_CORE → PD_AON**: Isolation cell, clamp to 0 when PD_CORE OFF.
-- **PD_RET ↔ PD_CORE**: Retention flops with save/restore signals.
-- **Voltage**: Assume single voltage for Day 1; level shifters to be added if multi-voltage is enabled later.
+- **PD_AON ↔ PD_CORE**: Retention flops with save/restore signals.
+- **Voltage**: Level shifters for multi-voltage.
 
 ## 5. Rationale
 The BLE baseband module needs to be gated. Otherwise it is always on and consumes lots of power, which is not a good situation for an ultra low power chip. In the sleep mode, it is off and saves power.
@@ -59,3 +59,10 @@ The BLE baseband module needs to be gated. Otherwise it is always on and consume
 - **Bit order**: Data fed MSB-first to CRC; CRC compared MSB-first per spec.
 - **Result**: Icarus Verilog simulation passes with 0 failures.
 - **Gating evidence**: `tx_active` and `data_valid` are low between packets; CRC/whitening LFSRs freeze (see waveform).
+
+## 11. Power Sequencing
+- **Power-down**: `iso_en_core=1` → `ret_save_n=0` pulse → `core_pwr_en=0`
+- **Power-up**: `core_pwr_en=1` → wait for pwr_ack → `ret_restore_n=0` pulse → `iso_en_core=0`
+- **Isolation**: `set_isolation` with `-isolation_signal {iso_en_core} -isolation_sense high`
+- **Retention**: `set_retention` with `-save_signal {ret_save_n negedge} -restore_signal {ret_restore_n negedge}`
+- **Note**: retention registers live inside `PD_CORE` with `VDD_AON` backup supply.

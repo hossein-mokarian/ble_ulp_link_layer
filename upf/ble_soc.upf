@@ -1,5 +1,6 @@
 upf_version 2.1
 
+
 # Create the power domains
 
 create_power_domain PD_TOP
@@ -8,10 +9,7 @@ create_power_domain PD_AON \
     -elements {u_aon_top u_pad_ring}
 
 create_power_domain PD_CORE \
-    -elements {u_ble_baseband}
-
-create_power_domain PD_RET \
-    -elements {u_retention_bank}
+    -elements {u_ble_baseband u_retention_bank}
 
 
 # Define the supply ports and nets
@@ -30,6 +28,7 @@ create_supply_net VSS
 create_supply_port VSS -direction in
 connect_supply_net  VSS -ports VSS
 
+
 # Connect supplies to domains
 
 set_domain_supply_net PD_TOP \
@@ -44,9 +43,6 @@ set_domain_supply_net PD_CORE \
     -primary_power_net VDD_CORE \
     -primary_ground_net VSS
 
-set_domain_supply_net PD_RET \
-    -primary_power_net VDD_AON \
-    -primary_ground_net VSS
 
 # Create Power switch
 
@@ -58,6 +54,7 @@ create_power_switch core_pwr_sw \
     -on_state {on_state vin {pwr_en}} \
     -off_state {off_state {!pwr_en}}
 
+
 # Isolation: clamp all outputs of PD_CORE to 0 when PD_CORE is OFF
 
 set_isolation iso_core_out \
@@ -66,13 +63,16 @@ set_isolation iso_core_out \
     -isolation_ground_net VSS \
     -clamp_value 0 \
     -applies_to outputs \
-    -location parent
-
-set_isolation_control iso_core_out \
-    -domain PD_CORE \
-    -isolation_signal iso_en \
+    -isolation_signal iso_en_core \
     -isolation_sense high \
-    -location parent
+    -location parent # Todo: self
+
+# set_isolation_control iso_core_out \
+#     -domain PD_CORE \
+#     -isolation_signal iso_en \
+#     -isolation_sense high \
+#     -location parent
+
 
 # Level shifters:
 
@@ -98,14 +98,17 @@ set_level_shifter ls_core \
 #     -rule low_to_high \
 #     -location parent
 
+
 # Retention: 
 
 set_retention ret_ret_bank \
-    -domain PD_RET \
+    -domain PD_CORE \
     -retention_power_net VDD_AON \
     -retention_ground_net VSS \
-    -save_signal {save_n negedge} \
-    -restore_signal {restore_n negedge}
+    -save_signal {ret_save_n negedge} \
+    -restore_signal {ret_restore_n negedge}
+    -elements {u_retention_bank}
+
 
 # Power State Table (PST)
 

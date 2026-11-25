@@ -14,3 +14,21 @@ run_ble_core_tb:
 
 ble_core_clock_gating:
 	yosys -s check_gatable.ys
+
+
+run_aon_timer_tb:
+	cd ../tb/unit && \
+	iverilog -g2012 -o tb_aon_timer.vvp \
+		tb_aon_timer.sv \
+		../../rtl/aon_timer.sv && \
+	vvp tb_aon_timer.vvp && \
+	gtkwave.exe tb_aon_timer.vcd
+	
+
+run_aon_ctrl_tb:
+	cd ../tb/unit && \
+	iverilog -g2012 -o tb_aon_ctrl.vvp \
+		tb_aon_ctrl.sv \
+		../../rtl/aon_ctrl.sv && \
+	vvp tb_aon_ctrl.vvp && \
+	gtkwave.exe tb_aon_ctrl.vcd
