@@ -33,6 +33,9 @@ module ble_baseband (
         .pkt_start  (pkt_start),     // from AON
         .pkt_done   (pkt_done),     // Todo:
 
+        .tx_data_valid(tx_data_valid),
+        .rx_data_valid(rx_data_valid),
+
         .crc_init   (crc_init),
         .whit_init  (whit_init),
 

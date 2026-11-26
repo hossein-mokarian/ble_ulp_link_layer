@@ -34,6 +34,7 @@ module ble_soc_top (
         .rst_n         (rst_n),
 
         .wake_req      (wake_req),
+        .timer_load    (timer_load),
         .pwr_good      (pwr_good),
         
         .core_pwr_en   (core_pwr_en),

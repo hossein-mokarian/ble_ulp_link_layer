@@ -26,9 +26,9 @@ module tb_ble_soc;
     logic        ret_save_n;
     logic        ret_restore_n;
 
-    logic failures;
-    logic byte_idx;
-    logic bit_idx;
+    integer failures;
+    integer byte_idx;
+    integer bit_idx;
 
     logic [23:0] exp_crc_value;
     logic fb;
@@ -113,7 +113,12 @@ module tb_ble_soc;
         
         //--- Test ---
 
+        while(!u_ble_soc_top.u_aon_timer.wake_req) @(posedge clk_aon);
+        while(!u_ble_soc_top.u_ble_baseband.pwr_good) @(posedge clk_core);
+        repeat(2) @(posedge clk_aon);
+
         // Start packet
+        @(negedge clk_core);
         pkt_start = 1;
         @(negedge clk_core);
         pkt_start = 0;
@@ -157,7 +162,7 @@ module tb_ble_soc;
         $display("========================================");
 
         
-        repeat(10) @(posedge clk_core);
+        repeat(50) @(posedge clk_core);
         $finish;
 
     end

@@ -4,6 +4,7 @@ module aon_ctrl (
     input logic rst_n,
 
     input logic wake_req,
+    input logic timer_load,
     input logic pwr_good,   // from CORE
     
     output logic core_pwr_en,
@@ -30,7 +31,7 @@ module aon_ctrl (
             state <= IDLE;
         end else begin
             case (state)
-                IDLE: if (!wake_req) state <= ISO_ON;
+                IDLE: if (!wake_req && !timer_load) state <= ISO_ON;
                 ISO_ON: state <= SAVE;
                 SAVE: state <= PWR_OFF;
                 PWR_OFF: if (wake_req) state <= PWR_ON;

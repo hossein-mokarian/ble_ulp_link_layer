@@ -5,6 +5,9 @@ module ble_ll_fsm (
 
     input  logic pkt_start,      // from AON: packet event scheduled
     input  logic pkt_done,       // from datapath: CRC + whitening finished
+
+    input logic tx_data_valid,
+    input logic rx_data_valid,
     
     output logic crc_init,
     output logic whit_init,
@@ -17,6 +20,8 @@ module ble_ll_fsm (
     output logic        pwr_good
 );
 
+    localparam int TIMEOUT = 32'd20;
+
     typedef enum logic [1:0] {
         STANDBY = 2'b00,
         TX      = 2'b01,
@@ -25,6 +30,8 @@ module ble_ll_fsm (
     } state_e;
 
     state_e state, next_state;
+
+    logic [31:0] tmr_count;
 
     // State register: enable-gated by state change only
     always_ff @(posedge clk or negedge rst_n) begin
@@ -40,8 +47,8 @@ module ble_ll_fsm (
         case (state)
             STANDBY: if (pkt_start) next_state = TX;
             TX:      if (pkt_done)  next_state = DONE;
-            DONE:                   next_state = STANDBY;
             RX:                     next_state = STANDBY;
+            DONE:                   next_state = STANDBY;
             default:                next_state = STANDBY;
         endcase
     end
@@ -54,8 +61,24 @@ module ble_ll_fsm (
         rx_active = (state == RX);
     end
 
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            tmr_count <= '0;
+        end else if (tx_active && tx_data_valid) begin
+            tmr_count <= '0;
+        end else if (rx_active && rx_data_valid) begin
+            tmr_count <= '0;
+        end else if (tx_active && !tx_data_valid) begin
+            tmr_count <= tmr_count + 1'b1;
+        end else if (rx_active && !rx_data_valid) begin
+            tmr_count <= tmr_count + 1'b1;
+        end else if (state == STANDBY) begin
+            tmr_count = '0;
+        end
+    end
+
     assign timer_interval = 16'd20;
-    assign timer_load = (state != STANDBY);
+    assign timer_load = (state != STANDBY && (tmr_count < TIMEOUT));
     assign pwr_good = 1'b1;
 
 endmodule

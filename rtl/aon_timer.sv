@@ -13,11 +13,11 @@ module aon_timer (
 
     always_ff @(posedge clk_aon or negedge rst_n) begin
         if (!rst_n) begin
-            counter  <= interval;
+            counter  <= interval - 1; // Todo: '0
         end else if (timer_load) begin
             counter  <= interval - 1;
         end else if (counter == 16'b0) begin
-            counter  <= interval;
+            counter  <= interval - 1;
         end else begin
             counter  <= counter - 1'b1;
         end
