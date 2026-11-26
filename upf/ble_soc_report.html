@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>UPF-Insight report</title>
+<style>
+ body { font-family: system-ui, sans-serif; margin: 2rem; color: #1a1a1a; }
+ h1 { font-size: 1.5rem; }
+ table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
+ th, td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid #e5e7eb; }
+ th { background: #f3f4f6; }
+ tr.error td:first-child { border-left: 4px solid #dc2626; }
+ tr.warning td:first-child { border-left: 4px solid #d97706; }
+ tr.info td:first-child { border-left: 4px solid #2563eb; }
+ .verdict { display: inline-block; padding: 0.5rem 1rem; border-radius: 6px;
+             color: white; font-weight: 700; }
+ .BLOCKED { background: #dc2626; }
+ .REVIEW_REQUIRED { background: #d97706; }
+ .READY_WITH_ADVISORIES { background: #2563eb; }
+ .READY { background: #059669; }
+ .INSUFFICIENT_CONTEXT { background: #6b7280; }
+ .dim { margin: 0.5rem 0; }
+ .muted { color: #6b7280; font-size: 0.85rem; }
+ .chip { display: inline-block; background: #f3f4f6; padding: 0.2rem 0.5rem;
+          border-radius: 4px; margin-right: 0.4rem; }
+</style></head><body>
+<h1>UPF-Insight - power-intent validation report</h1>
+<p class="muted">Files: 1 · Commands: 31 ·
+Summary: 0 error(s), 9
+warning(s), 0 info(s)</p>
+<h2>Readiness</h2><div class='verdict REVIEW_REQUIRED'>REVIEW_REQUIRED</div><div class='dim'><b>POWER_STATES</b>: READY<div class='muted'>2 PST state(s), 0 transition(s), 4 declared supply state(s).</div></div>
+<div class='dim'><b>SUPPLY_NETWORK</b>: REVIEW_REQUIRED<div class='muted'>3 domain(s), 4 net(s), 0 set(s), 3 port(s), 1 switch(es).</div></div>
+<div class='dim'><b>STRATEGIES</b>: REVIEW_REQUIRED<div class='muted'>1 isolation, 1 level-shifter, 1 retention, 0 repeater strategy(ies).</div></div>
+<div class='dim'><b>CONSISTENCY</b>: READY<div class='muted'>No unsupported commands parsed.</div></div>
+<div class='dim'><b>DESIGN_CONTEXT</b>: REVIEW_REQUIRED<div class='muted'>netlist/RTL context not supplied; design-aware rules (UPF-080..084) did not run</div></div>
+<h2>Support boundary</h2><div><span class='chip'>VALIDATED: 2</span> <span class='chip'>PARTIALLY_VALIDATED: 1</span> <span class='chip'>NETLIST_REQUIRED: 1</span></div>
+<h2>Power-domain relations</h2><p class='muted'>Architecture: FLAT · 3 domains · 0 always-on · 1 switchable · 2 relations. Supply sharing is NOT a domain interaction.</p><h3>Domain relation matrix</h3><table><tr><th></th><th>PD_AON</th><th>PD_CORE</th><th>PD_TOP</th></tr><tr><td class='muted'>PD_AON</td><td>-</td><td></td><td></td></tr><tr><td class='muted'>PD_CORE</td><td>ISO+LS+RET</td><td>-</td><td>LS</td></tr><tr><td class='muted'>PD_TOP</td><td></td><td></td><td>-</td></tr></table><h3>Relations</h3><table><thead><tr><th>From → To</th><th>Kinds</th><th>Evidence</th></tr></thead><tbody><tr><td>PD_CORE → PD_AON</td><td><b>ISO+LS+RET</b></td><td class='muted'> L79</td></tr><tr><td>PD_CORE → PD_TOP</td><td><b>LS</b></td><td class='muted'> L99</td></tr></tbody></table><h3>Supply network</h3><table><thead><tr><th>Supply</th><th>Domains</th></tr></thead><tbody><tr><td class='muted'>VDD_AON</td><td>PD_AON, PD_TOP</td></tr><tr><td class='muted'>VDD_CORE</td><td>PD_CORE</td></tr><tr><td class='muted'>VSS</td><td>PD_AON, PD_CORE, PD_TOP</td></tr></tbody></table><h3>Domain ownership</h3><table><thead><tr><th>Domain</th><th>Scope</th><th>UPF file</th></tr></thead><tbody><tr><td>PD_AON</td><td class='muted'>.</td><td class='muted'>ble_soc.upf</td></tr><tr><td>PD_CORE</td><td class='muted'>.</td><td class='muted'>ble_soc.upf</td></tr><tr><td>PD_TOP</td><td class='muted'>.</td><td class='muted'>ble_soc.upf</td></tr></tbody></table>
+<h2>Findings</h2>
+<table><thead><tr><th>Rule</th><th>Severity</th><th>Location</th>
+<th>Message</th><th>Support</th></tr></thead>
+<tbody><tr class='warning'><td>UPF-022</td><td>warning</td><td>..\..\upf\ble_soc.upf:29</td><td>Supply net &#x27;VDD_CORE&#x27; is not connected to any supply port/net/set.</td><td>VALIDATED</td></tr>
+<tr class='warning'><td>UPF-040</td><td>warning</td><td>..\..\upf\ble_soc.upf:79</td><td>Isolation supply &#x27;VDD_AON&#x27; always-on status must be confirmed against the PST / supply states.</td><td>PARTIAL</td></tr>
+<tr class='warning'><td>UPF-044</td><td>warning</td><td>..\..\upf\ble_soc.upf:79</td><td>Isolation for domain &#x27;PD_CORE&#x27; does not cover inouts (-applies_to &#x27;outputs&#x27;); bidirectional crossings may leak.</td><td>NETLIST_REQUIRED</td></tr>
+<tr class='warning'><td>UPF-047</td><td>warning</td><td>..\..\upf\ble_soc.upf:79</td><td>Isolation control &#x27;iso_en_core&#x27; for domain &#x27;PD_CORE&#x27; must be always-on; confirm it is not powered down.</td><td>PARTIAL</td></tr>
+<tr class='warning'><td>UPF-050</td><td>warning</td><td>..\..\upf\ble_soc.upf:137</td><td>Retention supply &#x27;VDD_AON&#x27; always-on status must be confirmed against the PST / supply states (requires power-state analysis).</td><td>PARTIAL</td></tr>
+<tr class='warning'><td>UPF-051</td><td>warning</td><td>..\..\upf\ble_soc.upf:137</td><td>Retention save control &#x27;{ret_save_n negedge}&#x27; for domain &#x27;PD_CORE&#x27; must be always-on; confirm it is not powered down.</td><td>PARTIAL</td></tr>
+<tr class='warning'><td>UPF-051</td><td>warning</td><td>..\..\upf\ble_soc.upf:137</td><td>Retention restore control &#x27;{ret_restore_n negedge}&#x27; for domain &#x27;PD_CORE&#x27; must be always-on; confirm it is not powered down.</td><td>PARTIAL</td></tr>
+<tr class='warning'><td>UPF-052</td><td>warning</td><td>..\..\upf\ble_soc.upf:137</td><td>set_retention for domain &#x27;PD_CORE&#x27; references no retention elements (-elements empty).</td><td>VALIDATED</td></tr>
+<tr class='warning'><td>UPF-071</td><td>warning</td><td>..\..\upf\ble_soc.upf:53</td><td>Power switch &#x27;core_pwr_sw&#x27; control &#x27;core_pwr_en&#x27; must be always-on; confirm it is not powered down.</td><td>PARTIAL</td></tr></tbody></table>
+</body></html>

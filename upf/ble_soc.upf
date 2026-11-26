@@ -140,7 +140,7 @@ set_retention ret_ret_bank \
 #     -retention_ground_net VSS \
 #     -save_signal {ret_save_n negedge} \
 #     -restore_signal {ret_restore_n negedge}
-#     -elements {u_retention_bank}
+# #   -elements {u_retention_bank}
 
 
 # Power State Table (PST)
