@@ -47,3 +47,14 @@ run_aon_ctrl_tb:
 		../../rtl/aon_ctrl.sv && \
 	vvp tb_aon_ctrl.vvp && \
 	gtkwave.exe tb_aon_ctrl.vcd
+
+
+run_power_seq_tb:
+	cd ../tb/unit && \
+	iverilog -g2012 -o tb_power_seq.vvp \
+		tb_power_seq.sv \
+		./checker/tb_isolation.sv \
+		./checker/tb_retention.sv \
+		../../rtl/aon_ctrl.sv && \
+	vvp tb_power_seq.vvp && \
+	gtkwave.exe tb_power_seq.vcd

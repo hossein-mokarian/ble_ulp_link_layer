@@ -66,3 +66,8 @@ The BLE baseband module needs to be gated. Otherwise it is always on and consume
 - **Isolation**: `set_isolation` with `-isolation_signal {iso_en_core} -isolation_sense high`
 - **Retention**: `set_retention` with `-save_signal {ret_save_n negedge} -restore_signal {ret_restore_n negedge}`
 - **Note**: retention registers live inside `PD_CORE` with `VDD_AON` backup supply.
+
+## 12. Dynamic Power-Aware Verification
+- **Isolation check**: `checker_isolation` asserts `interval == 0` when `iso_en_core=1`.
+- **Retention check**: `checker_retention` asserts restore only when power is stable; `conn_interval_reg` survives power-down and restores to 0x00A0.
+- **Full sequence**: ACTIVE → ISO_ON → SAVE → PWR_OFF → PWR_ON → RESTORE → ISO_OFF → ACTIVE, verified with 0 failures.
